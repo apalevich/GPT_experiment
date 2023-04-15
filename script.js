@@ -1,18 +1,16 @@
-import { config } from "dotenv";
-config()
+import { openai, userInterface } from "./helpers.js"
 
-import { Configuration, OpenAIApi } from "openai";
+const inputHandler = async input => {
+    const res = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: [{
+            role: 'user',
+            content: input
+        }]
+    })
+    console.log(res.data.choices[0].message.content)
+    userInterface.prompt()
+};
 
-const openai = new OpenAIApi(new Configuration({
-    apiKey: process.env.API_KEY
-}))
-
-openai.createChatCompletion({
-    model: "gpt-3.5-turbo",
-    messages: [{
-        role: 'user',
-        content: 'Okay, tell me the weather in Tbilisi for today and next 7 days. Pay more attention to how it feels depending on humidity and wind than absolute numbers'
-    }]
-})
-.then(({data}) => console.log(data.choices[0].message.content))
-
+userInterface.prompt()
+userInterface.on('line', inputHandler)
